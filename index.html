@@ -51,9 +51,11 @@ $(document).ready(function() {
 							$("table tr").eq(i-1).hide();
 						}
 					}
+					changeColor();
         }
 
     });
+	
 
     $(".addSearch").click(function(){
     	$("form").submit(sub());
@@ -190,11 +192,7 @@ function changeColor(){
             }
 }
 
- window.onload=function showtable(){
-	
-	changeColor();
 
-}
 
 </script>
 
