@@ -1,0 +1,226 @@
+<script type="text/javascript">
+var vol = 5;
+			var total = 12;
+			var page = (vol+total-1)/vol|0;
+			var pageNum = 1;
+			var pageBegin,pageEnd;
+$(document).ready(function() {
+	
+    $.ajax({
+       
+        type:"GET",
+        
+        url:"jobs.json",
+
+        dataType: "json",
+       
+        success: function(data){
+         var object;
+         var image;
+         var jobs=new Array();
+
+
+            $.each(data.jobs,function(i,item){
+
+                  jobs.push(item);
+                 object = "<tr><td><a href=\""+item['url']+"\"/a><img  class=\"image\" src=\""+item['companyIcon']+"\"></td><td><a href=\""+item['url']+"\"/a>"+item['companyName']+"</td><td class=\"text-align\">"+item['title']+"</td><td class=\"location\">"+item['location']+"</td><td class=\"date\">"+item['postedAt']+"</td></tr>"; 
+                 
+                  $('.table').append(object); 
+               
+              
+            })
+            pageBegin = (vol*(pageNum-1)+1)|0;
+				pageEnd = vol*pageNum;
+				for(var i = 0; i <= total; i++) {
+						if(i>=pageBegin && i <= pageEnd) {
+							$("table tr").eq(i-1).show();
+						}
+						else{
+							$("table tr").eq(i-1).hide();
+						}
+					}
+        }
+
+    });
+
+    $(".addSearch").click(function(){
+    	$("form").submit(sub());
+    });
+    
+});
+
+</script>
+<script type="text/javascript">
+
+	$(function(){
+
+	var data = {
+    "jobs": [
+        {
+        	"companyName": "Google Inc.",
+        	"companyIcon": "image-1.jpg",
+        	"title": "IT Engineer",
+        	"location": "Mountain View, CA",
+        	"postedAt": "December 15, 2015",
+            "url" :"https://www.google.com/about/careers/jobs",
+            "keywords": ["engineer", "it", "cs", "full time"]
+        },
+        {
+            "companyName": "Apple Inc.",
+            "companyIcon": "image-2.jpg",
+            "title": "Full Stack Engineer",
+            "location": "Mountain View, CA",
+            "postedAt": "December 16, 2015",
+            "url" :"https://jobs.apple.com/us/search#&t=0&sb=req_open_dt&so=1&lo=0*USA&pN=0",
+            "keywords": ["engineer", "full stack", "full time"]
+        },
+        {
+            "companyName": "WE Career Inc.",
+            "companyIcon": "image-3.jpg",
+            "title": "Front End Engineer",
+            "location": "Dublin, CA",
+            "postedAt": "April 10, 2016",
+            "url":"https://www.we-career.com",
+            "keywords": ["engineer", "front end", "design", "full time"]
+        },
+        {
+            "companyName": "WE Housing Inc.",
+            "companyIcon": "image-4.jpg",
+            "title": "Marketing Intern",
+            "location": "Dublin, CA",
+            "postedAt": "April 20, 2016",
+            "url":"http://www.we-housing.com/",
+            "keywords": ["marketing", "intern"]
+        }
+    ]
+};
+
+	var jobs = data.jobs;
+	function search(keyWord, array) {
+		if(!array || !array.length || !keyWord) {
+			return;
+		}
+		var result = [];
+		for(var i in array) {
+			if(array[i].companyName.toUpperCase().indexOf(keyWord.toUpperCase()) > -1 || array[i].title.toUpperCase().indexOf(keyWord.toUpperCase()) > -1) {
+				result.push(array[i]);
+				continue;
+			}
+			for(var j in array[i]['keywords']) {
+				if(keyWord.toUpperCase() == array[i]['keywords'][j].toUpperCase()) {
+					result.push(array[i]);
+				}
+			}
+		}
+		return result;
+	}
+
+	$('input[name=content]').bind('keyup',function(e) {
+		  if(e.keyCode==13){         
+			handle(e);
+		  }  
+	}); 
+
+	$(document).on('click', '.addSearch', function(e){
+		handle(e);
+	});
+
+	function handle(e) {
+		e.preventDefault();
+		var keyword = $('input[name=content]').val();
+		var result = search(keyword, jobs);
+		console.log(result);
+		var html = renderTable(result);
+		if(html) {
+			$('#page').html(html);
+		} else {
+			$('#page').html('no result');
+		}
+	}
+
+	function renderTable(data){
+		if(data && data.length) {		
+			var html ;
+			for(var i in data) {
+				var item = data[i];
+				html += "<tr class=\"SearchTr\">";
+				html += "<td class=\"image\"><img style='height:30px;width:30px;' src=\"" + item.companyIcon + "\"/></td>";
+				html += "<td class=\"text-align\"><a href=\""+item['url']+"\"/a>" + item.companyName + "</td>";
+				html += "<td class=\"text-align\">" + item.title + "</td>";
+				html += "<td class=\"Searchlocation\">" + item.location + "</td>";
+				html += "<td class=\"date\">" + item.postedAt + "</td>";
+			
+				html += "</tr>";
+			}
+			html += "</tbody></table>";
+changeColor();
+			return html;
+		}
+		
+	}
+
+	});
+
+
+</script>
+
+<script type="text/javascript">
+function changeColor(){
+	var tablename = document.getElementById("changeTable");
+            var oRows = tablename.getElementsByTagName("tr");
+            for (var i = 0; i < oRows.length; i++) {
+                oRows[i].onmouseover = function() {
+                    this.style.backgroundColor = "#a5e5aa";
+                }
+                oRows[i].onmouseout = function() {
+                    this.style.backgroundColor = "#FFFFFF";
+                }
+            }
+}
+
+ window.onload=function showtable(){
+	
+	changeColor();
+
+}
+
+</script>
+
+
+<script>
+			
+			
+			function prePage(){
+				if(pageNum > 1){
+					pageNum--;
+					pageBegin = (vol*(pageNum-1)+1);
+					pageEnd = vol*pageNum;
+					for(var i = 1; i <= total; i++) {
+						if(i>=pageBegin && i <= pageEnd) {
+							$("table tr").eq(i-1).show();
+						}
+						else{
+							$("table tr").eq(i-1).hide();
+						}
+					}
+				}
+				
+			}
+			
+			function nextPage(){
+				if(pageNum < page){
+					pageNum++;
+					pageBegin = (vol*(pageNum-1)+1);
+					pageEnd = vol*pageNum;
+					for(var i = 1; i <= total; i++) {
+						if(i>=pageBegin && i <= pageEnd) {
+							$("table tr").eq(i-1).show();
+						}
+						else{
+							$("table tr").eq(i-1).hide();
+						}
+					}
+				}
+			}
+			
+		</script>
